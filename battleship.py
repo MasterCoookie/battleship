@@ -18,6 +18,7 @@ class Grid:
         self.board = np.zeros((10, 10))
     
     def add_ship(self, size, start_index, end_index):
+        size -= 1
         '''Adds a ship (1s) in given location.
         Returns True if added correctly or False if there was an error.'''
         if (end_index[0] - start_index[0]) != size and (end_index[1] - start_index[1]) != size:
@@ -60,10 +61,36 @@ class Grid:
             return True
         return False
 
+class Player:
+    def __init__(self, board, nickname):
+        '''The board aquired form Grid class instance.'''
+        self.player_board = board
+        self.nickname = nickname
+        self.fleet = []
 
-p1 = Grid(False)
-print(p1.add_ship(2, (6, 3), (8, 3)))
-print(p1.add_ship(2, (9, 0), (9, 2)))
-print(p1.board)
-print(p1.fire_at((7, 4)))
-print(p1.board)
+    def add_ship_location(self, location):
+        '''Saves ship location so ships state can be checked after its been hit.'''
+        self.fleet.append(location)
+
+    def get_ship_state(self, ship_type):
+        '''Ship_type -> int representing ship type (see ship names).
+        Returns False if ship is still operational and True if it sank.'''
+        ship_location = self.fleet[ship_type]
+        ship_nodes = self.player_board.board[ship_location[0][0]:ship_location[1][0] + 1,
+                                             ship_location[0][1]:ship_location[1][1] + 1]
+        if np.all(ship_nodes == 3):
+            return False
+        return True
+
+
+
+grid = Grid(False)
+p1 = Player(grid, 'MasterCookie')
+print(p1.player_board.add_ship(2, (9, 0), (9, 1)))
+print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
+p1.add_ship_location(((9, 0), (9, 1)))
+print(p1.player_board.board)
+print(p1.player_board.fire_at((7, 4)))
+print(p1.player_board.fire_at((9, 0)))
+print(p1.player_board.fire_at((9, 1)))
+print(p1.get_ship_state(0))
