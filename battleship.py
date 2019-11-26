@@ -9,6 +9,7 @@ import numpy as np
 #     shot = False
 
 class Grid:
+    '''Players board.'''
     def __init__(self, bot):
         '''bot -> true for AI player
         
@@ -31,10 +32,12 @@ class Grid:
         if start_index[1] > 10 or end_index[1] > 11 - size:
             return False
 
-        if np.any(self.board[start_index[0]:end_index[0] + 2, start_index[1]:end_index[1] + 2] == 1):
+        if np.any(self.board[start_index[0]:end_index[0] + 2,
+                             start_index[1]:end_index[1] + 2] == 1):
             return False
 
-        if np.any(self.board[start_index[0] - 1:end_index[0] + 2, start_index[1] - 1:end_index[1] + 2] == 1):
+        if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
+                             start_index[1] - 1:end_index[1] + 2] == 1):
             return False
 
         # if np.any(self.board[start_index[0] - 1:end_index[0] - 1, start_index[1] - 1:end_index[1] - 1] == 1):
@@ -50,7 +53,7 @@ class Grid:
     def fire_at(self, spot):
         '''Shots at a given location (spot param) by incrementing its value by 2.
         Returns True if shot was a hit or False if it was a miss.'''
-        if self.board[spot[0], spot[1]] <= 2:
+        if self.board[spot[0], spot[1]] < 2:
             self.board[spot[0], spot[1]] += 2
 
         if self.board[spot[0], spot[1]] == 3:
