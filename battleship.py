@@ -2,12 +2,6 @@
 
 import numpy as np
 
-# class Node:
-#     def __init__(self, ship):
-#         self.ship = ship
-
-#     shot = False
-
 class Grid:
     '''Players board.'''
     def __init__(self, bot):
@@ -18,9 +12,9 @@ class Grid:
         self.board = np.zeros((10, 10))
     
     def add_ship(self, size, start_index, end_index):
-        size -= 1
         '''Adds a ship (1s) in given location.
         Returns True if added correctly or False if there was an error.'''
+        size -= 1
         if (end_index[0] - start_index[0]) != size and (end_index[1] - start_index[1]) != size:
             return False
 
@@ -82,15 +76,41 @@ class Player:
             return False
         return True
 
+    @property
+    def defeat(self):
+        '''Returns True if player lost or False if hes still alive.'''
+        if np.any(self.player_board.board == 1):
+            return False
+        return True
 
 
-grid = Grid(False)
-p1 = Player(grid, 'MasterCookie')
-print(p1.player_board.add_ship(2, (9, 0), (9, 1)))
-print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
-p1.add_ship_location(((9, 0), (9, 1)))
-print(p1.player_board.board)
-print(p1.player_board.fire_at((7, 4)))
-print(p1.player_board.fire_at((9, 0)))
-print(p1.player_board.fire_at((9, 1)))
-print(p1.get_ship_state(0))
+def convert_input(player_input):
+    '''Converts board indexes from A9, C3 etc to tuples
+    understandable by the code, aso check if it isnt faulty. Returns False if it is.'''
+    if len(player_input) != 2 and player_input[1:] != '10':
+        return False
+
+    chars = 'abcdefghij'
+    index = chars.find(player_input[0].lower())
+
+    if index == -1:
+        return False
+
+    if 1 <= int(player_input[1]) <= 10:
+        return (index, int(player_input[1:]) - 1)
+    return False
+
+    
+
+# grid = Grid(False)
+# p1 = Player(grid, 'MasterCookie')
+# print(p1.player_board.add_ship(2, (9, 0), (9, 1)))
+# print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
+# p1.add_ship_location(((9, 0), (9, 1)))
+# print(p1.player_board.board)
+# print(p1.player_board.fire_at((7, 4)))
+# print(p1.player_board.fire_at((9, 0)))
+# print(p1.player_board.fire_at((9, 1)))
+# print(p1.player_board.board)
+# print(p1.defeat)
+print(convert_input(input()))
