@@ -21,10 +21,10 @@ class Grid:
         if end_index[0] != start_index[0] and end_index[1] != start_index[1]:
             return False
 
-        if start_index[0] > 10 or end_index[0] > 11 - size:
+        if start_index[0] > 10 or end_index[0] > 10:
             return False
 
-        if start_index[1] > 10 or end_index[1] > 11 - size:
+        if start_index[1] > 10 or end_index[1] > 10:
             return False
 
         if np.any(self.board[start_index[0]:end_index[0] + 2,
@@ -34,12 +34,6 @@ class Grid:
         if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
                              start_index[1] - 1:end_index[1] + 2] == 1):
             return False
-
-        # if np.any(self.board[start_index[0] - 1:end_index[0] - 1, start_index[1] - 1:end_index[1] - 1] == 1):
-        #     return False
-
-        # if np.any(self.board[start_index[0] - 1:end_index[0] + 1, start_index[1] - 1:end_index[1] + 1] == 1):
-        #     return False
 
         self.board[start_index[0]:end_index[0] + 1, start_index[1]:end_index[1] + 1] = 1
 
@@ -55,19 +49,21 @@ class Grid:
             return True
         return False
 
+
 class Player:
     def __init__(self, board, nickname):
         '''The board aquired form Grid class instance.'''
         self.player_board = board
         self.nickname = nickname
         self.fleet = []
+        self.shots_fired = []
 
     def add_ship_location(self, location):
         '''Saves ship location so ships state can be checked after its been hit.'''
         self.fleet.append(location)
 
     def get_ship_state(self, ship_type):
-        '''Ship_type -> int representing ship type (see ship names).
+        '''Ship_type -> int representing ship type (see ship_names).
         Returns False if ship is still operational and True if it sank.'''
         ship_location = self.fleet[ship_type]
         ship_nodes = self.player_board.board[ship_location[0][0]:ship_location[1][0] + 1,
@@ -84,6 +80,12 @@ class Player:
         return True
 
 
+    def can_fire_at(self, spot):
+        '''Returns True if given spot hasnt been fired at yet.'''
+        if spot in self.shots_fired:
+            return False
+        return True
+
 def convert_input(player_input):
     '''Converts board indexes from A9, C3 etc to tuples
     understandable by the code, aso check if it isnt faulty. Returns False if it is.'''
@@ -97,7 +99,7 @@ def convert_input(player_input):
         return False
 
     if 1 <= int(player_input[1]) <= 10:
-        return (index, int(player_input[1:]) - 1)
+        return (int(player_input[1:]) - 1, index)
     return False
 
     
@@ -108,9 +110,29 @@ def convert_input(player_input):
 # print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
 # p1.add_ship_location(((9, 0), (9, 1)))
 # print(p1.player_board.board)
-# print(p1.player_board.fire_at((7, 4)))
 # print(p1.player_board.fire_at((9, 0)))
+# p1.shots_fired.append((9, 0))
+# print(p1.can_fire_at((9, 0)))
 # print(p1.player_board.fire_at((9, 1)))
-# print(p1.player_board.board)
+# print(p1.shots_fired)
 # print(p1.defeat)
-print(convert_input(input()))
+# print(convert_input(input()))
+
+print('Hello! Welcome to JK.Battleship 0.1!\nPlease input your player name')
+grid = Grid(False)
+player = Player(grid, input())
+SHIP_NAMES = ['Destroyer', 'Submarine', 'Cruiser', 'Battleship', 'Carrier']
+print('Now, lets set up the board!')
+for idx in range(5):
+    insert = True
+    while(insert):
+        print(f'Place your {SHIP_NAMES[idx]} ({idx + 2} holes) on the board')
+        print('Input the starting and edning grid coordinate of your ship')
+        coordinate_1 = convert_input(input())
+        coordinate_2 = convert_input(input())
+        if coordinate_1 and coordinate_2 and player.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
+            insert = False
+        print(player.player_board.board)
+
+print(player.player_board.board)
+
