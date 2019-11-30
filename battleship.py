@@ -1,5 +1,6 @@
 '''A game of battleships created with help of numpy.'''
 
+import random
 import numpy as np
 
 class Grid:
@@ -15,6 +16,14 @@ class Grid:
         '''Adds a ship (1s) in given location.
         Returns True if added correctly or False if there was an error.'''
         size -= 1
+        #TEMP
+        # self.board[start_index[0]:end_index[0] + 2,
+        #                      start_index[1]:end_index[1] + 2] = 5
+
+        # self.board[start_index[0] - 1:end_index[0] + 2,
+        #                      start_index[1] - 1:end_index[1] + 2] = 5
+
+
         if (end_index[0] - start_index[0]) != size and (end_index[1] - start_index[1]) != size:
             return False
 
@@ -28,12 +37,25 @@ class Grid:
             return False
 
         if np.any(self.board[start_index[0]:end_index[0] + 2,
-                             start_index[1]:end_index[1] + 2] == 1):
+                            start_index[1]:end_index[1] + 2] == 1):
+            return False
+
+        if np.any(self.board[start_index[0]:end_index[0] + 2,
+                            start_index[1] - 1:end_index[1] + 2] == 1):
             return False
 
         if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
-                             start_index[1] - 1:end_index[1] + 2] == 1):
+                            start_index[1]:end_index[1] - 1] == 1):
             return False
+
+        if np.any(self.board[start_index[0] - 1:end_index[0],
+                            start_index[1]:end_index[1] + 2] == 1):
+            return False
+
+        if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
+                            start_index[1] - 1:end_index[1] + 2] == 1):
+            return False
+
 
         self.board[start_index[0]:end_index[0] + 1, start_index[1]:end_index[1] + 1] = 1
 
@@ -104,8 +126,11 @@ def convert_input(player_input):
 
     
 
-# grid = Grid(False)
-# p1 = Player(grid, 'MasterCookie')
+grid = Grid(False)
+p1 = Player(grid, 'MasterCookie')
+p1.player_board.add_ship(2, (2, 7), (2, 8))
+p1.player_board.add_ship(6, (3, 0), (3, 5))
+print(p1.player_board.board)
 # print(p1.player_board.add_ship(2, (9, 0), (9, 1)))
 # print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
 # p1.add_ship_location(((9, 0), (9, 1)))
@@ -119,20 +144,39 @@ def convert_input(player_input):
 # print(convert_input(input()))
 
 print('Hello! Welcome to JK.Battleship 0.1!\nPlease input your player name')
-grid = Grid(False)
-player = Player(grid, input())
+grid_p = Grid(False)
+player = Player(grid_p, input())
 SHIP_NAMES = ['Destroyer', 'Submarine', 'Cruiser', 'Battleship', 'Carrier']
 print('Now, lets set up the board!')
+# for idx in range(5):
+#     while(True):
+#         print(f'Place your {SHIP_NAMES[idx]} ({idx + 2} holes) on the board')
+#         print('Input the starting and edning grid coordinate of your ship')
+#         coordinate_1 = convert_input(input())
+#         coordinate_2 = convert_input(input())
+#         if coordinate_1 and coordinate_2 and player.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
+#             break
+
+print("All set! Lets play!")
+
+grid_b = Grid(True)
+bot = Player(grid_b, 'AI')
+
 for idx in range(5):
-    insert = True
-    while(insert):
-        print(f'Place your {SHIP_NAMES[idx]} ({idx + 2} holes) on the board')
-        print('Input the starting and edning grid coordinate of your ship')
-        coordinate_1 = convert_input(input())
-        coordinate_2 = convert_input(input())
-        if coordinate_1 and coordinate_2 and player.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
-            insert = False
-        print(player.player_board.board)
+    while(True):
+        coordinate_1 = [random.randint(0, 9), random.randint(0, 9)]
+        coordinate_2 = coordinate_1.copy()
+        axis = random.randint(0, 1)
+        if (coordinate_2[axis - 1] < 10 - (idx + 1)):
+            coordinate_2[axis - 1] += idx + 1
+            print(coordinate_1, coordinate_2)
+            if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
+                break
+        elif(coordinate_2[axis] < 10 - (idx + 1)):
+            coordinate_2[axis] += idx + 1
+            print(coordinate_1, coordinate_2)
+            if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
+                break
 
-print(player.player_board.board)
 
+print(bot.player_board.board)
