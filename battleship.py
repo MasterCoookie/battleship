@@ -1,5 +1,6 @@
 '''A game of battleships created with help of numpy.'''
 
+import time
 import random
 import numpy as np
 
@@ -84,10 +85,9 @@ class Player:
         '''Saves ship location so ships state can be checked after its been hit.'''
         self.fleet.append(location)
 
-    def get_ship_state(self, ship_type):
+    def get_ship_state(self, ship_location):
         '''Ship_type -> int representing ship type (see ship_names).
         Returns False if ship is still operational and True if it sank.'''
-        ship_location = self.fleet[ship_type]
         ship_nodes = self.player_board.board[ship_location[0][0]:ship_location[1][0] + 1,
                                              ship_location[0][1]:ship_location[1][1] + 1]
         if np.all(ship_nodes == 3):
@@ -180,3 +180,30 @@ for idx in range(5):
 
 
 print(bot.player_board.board)
+
+while not (not player.defeat or bot.defeat):
+    print("You go first! Good luck!")
+    time.sleep(1)
+    player_turn = True
+    while player_turn:
+        print("Input the coordinates of grid You want to shoot at")
+        coordinates = convert_input(input())
+        while not player.can_fire_at(coordinates):
+            print("Something is wrong with your coordinates!")
+            coordinates = convert_input(input())
+        player_turn = bot.player_board.fire_at(coordinates)
+        time.sleep(1)
+        if player_turn:
+            print("Thats a hit!")
+            if bot.get_ship_state(coordinates):
+                print("This ship sank!")
+        else:
+            print("Thats a miss!")
+
+            
+
+
+if bot.defeat:
+    print("Congratulations! You win! GG")
+else:
+    print("You lose! Better luck next time! GG")
