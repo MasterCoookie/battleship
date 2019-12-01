@@ -85,14 +85,20 @@ class Player:
         '''Saves ship location so ships state can be checked after its been hit.'''
         self.fleet.append(location)
 
-    def get_ship_state(self, ship_location):
+    def get_ship_state(self, hit_location):
         '''Ship_type -> int representing ship type (see ship_names).
         Returns False if ship is still operational and True if it sank.'''
+        for ship in self.fleet:
+            if hit_location[0] in range(ship[0][0], ship[1][0] + 1):
+                if hit_location[1] in range(ship[0][1], ship[1][1] + 1):
+                    ship_location = ship
+                    break
+
         ship_nodes = self.player_board.board[ship_location[0][0]:ship_location[1][0] + 1,
                                              ship_location[0][1]:ship_location[1][1] + 1]
         if np.all(ship_nodes == 3):
-            return False
-        return True
+            return True
+        return False
 
     @property
     def defeat(self):
@@ -126,12 +132,13 @@ def convert_input(player_input):
 
     
 
-grid = Grid(False)
-p1 = Player(grid, 'MasterCookie')
-p1.player_board.add_ship(2, (2, 7), (2, 8))
-p1.player_board.add_ship(6, (3, 0), (3, 5))
-print(p1.player_board.board)
-# print(p1.player_board.add_ship(2, (9, 0), (9, 1)))
+# grid = Grid(False)
+# p1 = Player(grid, 'MasterCookie')
+# p1.player_board.add_ship(2, (2, 7), (2, 8))
+# p1.player_board.add_ship(6, (3, 0), (3, 5))
+# p1.add_ship_location(((3, 0), (3, 5)))
+# print(p1.player_board.board)
+# print(p1.get_ship_state((3, 4)))
 # print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
 # p1.add_ship_location(((9, 0), (9, 1)))
 # print(p1.player_board.board)
@@ -171,11 +178,13 @@ for idx in range(5):
             coordinate_2[axis - 1] += idx + 1
             print(coordinate_1, coordinate_2)
             if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
+                bot.add_ship_location((coordinate_1, coordinate_2))
                 break
         elif(coordinate_2[axis] < 10 - (idx + 1)):
             coordinate_2[axis] += idx + 1
             print(coordinate_1, coordinate_2)
             if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
+                bot.add_ship_location((coordinate_1, coordinate_2))
                 break
 
 
@@ -193,6 +202,7 @@ while not (not player.defeat or bot.defeat):
             coordinates = convert_input(input())
         player_turn = bot.player_board.fire_at(coordinates)
         time.sleep(1)
+        #if player turn is true it means the shot hit
         if player_turn:
             print("Thats a hit!")
             if bot.get_ship_state(coordinates):
@@ -201,7 +211,6 @@ while not (not player.defeat or bot.defeat):
             print("Thats a miss!")
 
             
-
 
 if bot.defeat:
     print("Congratulations! You win! GG")
