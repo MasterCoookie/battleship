@@ -1,7 +1,1 @@
-grid = Grid(False)
-# p1 = Player(grid, 'MasterCookie')
-# p1.player_board.add_ship(2, (2, 7), (2, 8))
-# p1.player_board.add_ship(6, (3, 0), (3, 5))
-# p1.add_ship_location(((3, 0), (3, 5)))
-# print(p1.player_board.board)
-# print(p1.get_ship_state((3, 4)))
+2, 7), (2, 8)

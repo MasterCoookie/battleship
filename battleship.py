@@ -12,7 +12,7 @@ class Grid:
         The board is a 2d arr, where 0s indicate water, 1s ships, 2s misses and 3s hits.'''
         self.bot = bot
         self.board = np.zeros((10, 10))
-    
+
     def add_ship(self, size, start_index, end_index):
         '''Adds a ship (1s) in given location.
         Returns True if added correctly or False if there was an error.'''
@@ -80,6 +80,8 @@ class Player:
         self.nickname = nickname
         self.fleet = []
         self.shots_fired = []
+        if board.bot:
+            self.misses = 0
 
     def add_ship_location(self, location):
         '''Saves ship location so ships state can be checked after its been hit.'''
@@ -130,7 +132,11 @@ def convert_input(player_input):
         return (int(player_input[1:]) - 1, index)
     return False
 
-    
+def vertical(ship_location):
+    '''Returns True if given ship is placed vertically and False if its not'''
+    if ship_location[0][0] == ship_location[1][0]:
+        return True
+    return False
 
 # grid = Grid(False)
 # p1 = Player(grid, 'MasterCookie')
@@ -164,6 +170,12 @@ print('Now, lets set up the board!')
 #         if coordinate_1 and coordinate_2 and player.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
 #             break
 
+# dummy data player board
+player.player_board.add_ship(2, (2, 7), (2, 8))
+player.player_board.add_ship(6, (3, 2), (8, 2))
+player.add_ship_location(((2, 7), (2, 8)))
+player.add_ship_location(((3, 2), (8, 2)))
+
 print("All set! Lets play!")
 
 grid_b = Grid(True)
@@ -189,12 +201,12 @@ for idx in range(5):
 
 
 print(bot.player_board.board)
-
-while not (not player.defeat or bot.defeat):
-    print("You go first! Good luck!")
+print("You go first! Good luck!")
+while not (player.defeat or bot.defeat):
     time.sleep(1)
     player_turn = True
     while player_turn:
+        time.sleep(1)
         print("Input the coordinates of grid You want to shoot at")
         coordinates = convert_input(input())
         while not player.can_fire_at(coordinates):
@@ -210,6 +222,41 @@ while not (not player.defeat or bot.defeat):
         else:
             print("Thats a miss!")
 
+    while not player_turn:
+        print("Now its AIs turn!")
+        time.sleep(1)
+        hit_prev = False
+        if hit_prev:
+            pass
+            #shoot nearby
+        elif not (random.randint(0, 20 - 2 * bot.misses)):
+            pass
+            #shoot randomly
+        else:
+            #guaranteed hit
+            # find operating ship
+            random_ship = random.choice(player.fleet)
+            while player.get_ship_state(random_ship[0]):
+                random_ship = random.choice(player.fleet)
+
+            increment = 0
+            if vertical(random_ship):
+                ship_node = player.player_board.board[random_ship[0][0]][random_ship[0][1]]
+                while ship_node == 3:
+                    increment += 1
+                    ship_node = player.player_board.board[random_ship[0][0]][random_ship[0][1] + increment]
+                shot_location = (random_ship[0][0], random_ship[0][1] + increment)
+                player.player_board.fire_at(shot_location)
+                print(player.player_board.board)
+            else:
+                ship_node = player.player_board.board[random_ship[0][0]][random_ship[0][1]]
+                while ship_node == 3:
+                    increment += 1
+                    ship_node = player.player_board.board[random_ship[0][0] + increment][random_ship[0][1]]
+                shot_location = (random_ship[0][0] + increment, random_ship[0][1])
+                player.player_board.fire_at(shot_location)
+                print(player.player_board.board)
+                
             
 
 if bot.defeat:
