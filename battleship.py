@@ -123,6 +123,9 @@ def convert_input(player_input):
         return False
 
     chars = 'abcdefghij'
+    if player_input[0].lower() not in chars:
+        return False
+
     index = chars.find(player_input[0].lower())
 
     if index == -1:
@@ -209,10 +212,11 @@ while not (player.defeat or bot.defeat):
         time.sleep(1)
         print("Input the coordinates of grid You want to shoot at")
         coordinates = convert_input(input())
-        while not player.can_fire_at(coordinates):
+        while not coordinates or not player.can_fire_at(coordinates):
             print("Something is wrong with your coordinates!")
             coordinates = convert_input(input())
         player_turn = bot.player_board.fire_at(coordinates)
+        player.shots_fired.append(coordinates)
         time.sleep(1)
         #if player turn is true it means the shot hit
         if player_turn:
@@ -229,9 +233,18 @@ while not (player.defeat or bot.defeat):
         if hit_prev:
             pass
             #shoot nearby
-        elif not (random.randint(0, 20 - 2 * bot.misses)):
-            pass
-            #shoot randomly
+        elif (random.randint(0, 22 - 2 * bot.misses)):
+            coordinates = [random.randint(0, 9), random.randint(0, 9)]
+            while not bot.can_fire_at(coordinates):
+                coordinates = [random.randint(0, 9), random.randint(0, 9)]
+            if player.player_board.fire_at(coordinates):
+                # TODO - reverse convert function
+                bot.misses = 0
+            else:
+                bot.misses += 1
+                # TODO - reverse convert function
+            bot.shots_fired.append(coordinates)
+            print(player.player_board.board)
         else:
             #guaranteed hit
             # find operating ship
@@ -247,6 +260,7 @@ while not (player.defeat or bot.defeat):
                     ship_node = player.player_board.board[random_ship[0][0]][random_ship[0][1] + increment]
                 shot_location = (random_ship[0][0], random_ship[0][1] + increment)
                 player.player_board.fire_at(shot_location)
+                bot.shots_fired.append(shot_location)
                 print(player.player_board.board)
             else:
                 ship_node = player.player_board.board[random_ship[0][0]][random_ship[0][1]]
@@ -255,9 +269,11 @@ while not (player.defeat or bot.defeat):
                     ship_node = player.player_board.board[random_ship[0][0] + increment][random_ship[0][1]]
                 shot_location = (random_ship[0][0] + increment, random_ship[0][1])
                 player.player_board.fire_at(shot_location)
+                bot.shots_fired.append(shot_location)
                 print(player.player_board.board)
-                
-            
+
+            bot.misses = 0
+        
 
 if bot.defeat:
     print("Congratulations! You win! GG")
