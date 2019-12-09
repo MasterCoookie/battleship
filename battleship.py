@@ -74,6 +74,7 @@ class Grid:
 
 
 class Player:
+    '''Player class with his board assigned'''
     def __init__(self, board, nickname):
         '''The board aquired form Grid class instance.'''
         self.player_board = board
@@ -135,6 +136,12 @@ def convert_input(player_input):
         return (int(player_input[1:]) - 1, index)
     return False
 
+def reverse_convert_input(bot_input):
+    '''Converts board indexes from tuples
+    understandable by the code to A9, C3 etc.'''
+    chars = 'abcdefghij'
+    return f"{chars[bot_input[0]]}{bot_input[1]}"
+
 def vertical(ship_location):
     '''Returns True if given ship is placed vertically and False if its not'''
     if ship_location[0][0] == ship_location[1][0]:
@@ -185,17 +192,17 @@ grid_b = Grid(True)
 bot = Player(grid_b, 'AI')
 
 for idx in range(5):
-    while(True):
+    while True:
         coordinate_1 = [random.randint(0, 9), random.randint(0, 9)]
         coordinate_2 = coordinate_1.copy()
         axis = random.randint(0, 1)
-        if (coordinate_2[axis - 1] < 10 - (idx + 1)):
+        if coordinate_2[axis - 1] < 10 - (idx + 1):
             coordinate_2[axis - 1] += idx + 1
             print(coordinate_1, coordinate_2)
             if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
                 bot.add_ship_location((coordinate_1, coordinate_2))
                 break
-        elif(coordinate_2[axis] < 10 - (idx + 1)):
+        elif coordinate_2[axis] < 10 - (idx + 1):
             coordinate_2[axis] += idx + 1
             print(coordinate_1, coordinate_2)
             if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
@@ -229,21 +236,20 @@ while not (player.defeat or bot.defeat):
     while not player_turn:
         print("Now its AIs turn!")
         time.sleep(1)
-        hit_prev = False
-        if hit_prev:
+        dgmd_ship = False
+        if dgmd_ship:
             pass
             #shoot nearby
-        elif (random.randint(0, 22 - 2 * bot.misses)):
-            coordinates = [random.randint(0, 9), random.randint(0, 9)]
-            while not bot.can_fire_at(coordinates):
-                coordinates = [random.randint(0, 9), random.randint(0, 9)]
-            if player.player_board.fire_at(coordinates):
-                # TODO - reverse convert function
+        elif random.randint(0, 22 - 2 * bot.misses):
+            shot_location = [random.randint(0, 9), random.randint(0, 9)]
+            while not bot.can_fire_at(shot_location):
+                shot_location = [random.randint(0, 9), random.randint(0, 9)]
+            if player.player_board.fire_at(shot_location):
                 bot.misses = 0
             else:
                 bot.misses += 1
-                # TODO - reverse convert function
-            bot.shots_fired.append(coordinates)
+                player_turn = True
+            bot.shots_fired.append(shot_location)
             print(player.player_board.board)
         else:
             #guaranteed hit
@@ -272,8 +278,19 @@ while not (player.defeat or bot.defeat):
                 bot.shots_fired.append(shot_location)
                 print(player.player_board.board)
 
+            hit_now = True
             bot.misses = 0
-        
+
+        print(f"Bot shoots at {reverse_convert_input(shot_location)}")
+        if player_turn:
+            print("Thats a miss!")
+        else:
+            print("Thats a hit!")
+            if player.get_ship_state(shot_location):
+                print("This ship sank!")
+            else:
+                dgmd_ship = shot_location
+
 
 if bot.defeat:
     print("Congratulations! You win! GG")
