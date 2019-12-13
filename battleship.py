@@ -181,7 +181,6 @@ for idx in range(5):
                 bot.add_ship_location((coordinate_1, coordinate_2))
                 break
 
-print(bot.player_board.board)
 print("You go first! Good luck!")
 dgmd_ship = False
 shot_location = None
@@ -260,7 +259,6 @@ while not (player.defeat() or bot.defeat()):
 
             bot.misses = 0
 
-        print(player.player_board.board)
         print(f"Bot shoots at {reverse_convert_input(shot_location)}")
         bot.shots_fired.append(shot_location)
         if player_turn:
