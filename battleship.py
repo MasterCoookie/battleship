@@ -149,7 +149,7 @@ grid_p = Grid(False)
 player = Player(grid_p, input())
 SHIP_NAMES = ['Destroyer', 'Submarine', 'Cruiser', 'Battleship', 'Carrier']
 print('Now, lets set up the board!')
-for idx in range(2):
+for idx in range(5):
     while True:
         print(f'Place your {SHIP_NAMES[idx]} ({idx + 2} holes) on the board')
         print('Input the starting and edning grid coordinate of your ship')
