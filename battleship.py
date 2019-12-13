@@ -8,7 +8,7 @@ class Grid:
     '''Players board.'''
     def __init__(self, bot):
         '''bot -> true for AI player
-        
+
         The board is a 2d arr, where 0s indicate water, 1s ships, 2s misses and 3s hits.'''
         self.bot = bot
         self.board = np.zeros((10, 10))
@@ -17,45 +17,37 @@ class Grid:
         '''Adds a ship (1s) in given location.
         Returns True if added correctly or False if there was an error.'''
         size -= 1
-        #TEMP
-        # self.board[start_index[0]:end_index[0] + 2,
-        #                      start_index[1]:end_index[1] + 2] = 5
-
-        # self.board[start_index[0] - 1:end_index[0] + 2,
-        #                      start_index[1] - 1:end_index[1] + 2] = 5
-
-
         if (end_index[0] - start_index[0]) != size and (end_index[1] - start_index[1]) != size:
             return False
 
         if end_index[0] != start_index[0] and end_index[1] != start_index[1]:
             return False
 
-        if start_index[0] > 10 or end_index[0] > 10:
-            return False
-
-        if start_index[1] > 10 or end_index[1] > 10:
+        if start_index[0] > 10 or end_index[0] > 10 or start_index[1] > 10 or end_index[1] > 10:
             return False
 
         if np.any(self.board[start_index[0]:end_index[0] + 2,
-                            start_index[1]:end_index[1] + 2] == 1):
+                             start_index[1]:end_index[1] + 2] == 1):
             return False
 
-        if np.any(self.board[start_index[0]:end_index[0] + 2,
-                            start_index[1] - 1:end_index[1] + 2] == 1):
-            return False
+        if start_index[1] != 0:
+            if np.any(self.board[start_index[0]:end_index[0] + 2,
+                                 start_index[1] - 1:end_index[1] + 2] == 1):
+                return False
 
-        if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
-                            start_index[1]:end_index[1] - 1] == 1):
-            return False
+        if start_index[0] != 0:
+            if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
+                                 start_index[1]:end_index[1] - 1] == 1):
+                return False
 
-        if np.any(self.board[start_index[0] - 1:end_index[0],
-                            start_index[1]:end_index[1] + 2] == 1):
-            return False
+            if np.any(self.board[start_index[0] - 1:end_index[0],
+                                 start_index[1]:end_index[1] + 2] == 1):
+                return False
 
-        if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
-                            start_index[1] - 1:end_index[1] + 2] == 1):
-            return False
+            if start_index[1] != 0:
+                if np.any(self.board[start_index[0] - 1:end_index[0] + 2,
+                                     start_index[1] - 1:end_index[1] + 2] == 1):
+                    return False
 
 
         self.board[start_index[0]:end_index[0] + 1, start_index[1]:end_index[1] + 1] = 1
@@ -89,6 +81,7 @@ class Player:
         self.fleet.append(location)
 
     def get_ship_location(self, hit_location):
+        '''Returns ship location by given hit location'''
         for ship in self.fleet:
             if hit_location[0] in range(ship[0][0], ship[1][0] + 1):
                 if hit_location[1] in range(ship[0][1], ship[1][1] + 1):
@@ -98,8 +91,7 @@ class Player:
         return ship_location
 
     def get_ship_state(self, hit_location):
-        '''Ship_type -> int representing ship type (see ship_names).
-        Returns False if ship is still operational and True if it sank.'''
+        '''Returns False if ship is still operational and True if it sank.'''
         ship_location = self.get_ship_location(hit_location)
 
         ship_nodes = self.player_board.board[ship_location[0][0]:ship_location[1][0] + 1,
@@ -109,7 +101,6 @@ class Player:
             return True
         return False
 
-    @property
     def defeat(self):
         '''Returns True if player lost or False if hes still alive.'''
         if np.any(self.player_board.board == 1):
@@ -177,20 +168,22 @@ grid_p = Grid(False)
 player = Player(grid_p, input())
 SHIP_NAMES = ['Destroyer', 'Submarine', 'Cruiser', 'Battleship', 'Carrier']
 print('Now, lets set up the board!')
-# for idx in range(5):
-#     while(True):
-#         print(f'Place your {SHIP_NAMES[idx]} ({idx + 2} holes) on the board')
-#         print('Input the starting and edning grid coordinate of your ship')
-#         coordinate_1 = convert_input(input())
-#         coordinate_2 = convert_input(input())
-#         if coordinate_1 and coordinate_2 and player.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
-#             break
+for idx in range(2):
+    while True:
+        print(f'Place your {SHIP_NAMES[idx]} ({idx + 2} holes) on the board')
+        print('Input the starting and edning grid coordinate of your ship')
+        coordinate_1 = convert_input(input())
+        coordinate_2 = convert_input(input())
+        if coordinate_1 and coordinate_2 and player.player_board.add_ship(idx + 2, coordinate_1,
+                                                                          coordinate_2):
+            player.add_ship_location((coordinate_1, coordinate_2))
+            break
 
 # dummy data player board
-player.player_board.add_ship(2, (2, 7), (2, 8))
-player.player_board.add_ship(6, (3, 2), (8, 2))
-player.add_ship_location(((2, 7), (2, 8)))
-player.add_ship_location(((3, 2), (8, 2)))
+# player.player_board.add_ship(2, (2, 7), (2, 8))
+# player.player_board.add_ship(6, (3, 2), (8, 2))
+# player.add_ship_location(((2, 7), (2, 8)))
+# player.add_ship_location(((3, 2), (8, 2)))
 
 print("All set! Lets play!")
 
@@ -218,7 +211,7 @@ print(bot.player_board.board)
 print("You go first! Good luck!")
 dgmd_ship = False
 shot_location = None
-while not (player.defeat or bot.defeat):
+while not (player.defeat() or bot.defeat()):
     time.sleep(1)
     player_turn = True
     while player_turn:
@@ -248,13 +241,9 @@ while not (player.defeat or bot.defeat):
             coordinate_2 = random.randint(target[0][1] - 1, target[1][1] + 1)
             shot_location = [coordinate_1, coordinate_2]
 
-            while (0 > coordinate_1 > 10) or (0 > coordinate_2 > 10):
-                coordinate_1 = random.randint(target[0][0] - 1, target[1][0] - 1)
-                coordinate_2 = random.randint(target[0][1] + 1, target[1][1] + 1)
-
-            while not bot.can_fire_at(shot_location):
-                coordinate_1 = random.randint(target[0][0] - 1, target[1][0] - 1)
-                coordinate_2 = random.randint(target[0][1] + 1, target[1][1] + 1)
+            while not bot.can_fire_at(shot_location) or coordinate_1 == 10 or coordinate_2 == 10 or coordinate_1 == -1 or coordinate_2 == -1:
+                coordinate_1 = random.randint(target[0][0] - 1, target[1][0] + 1)
+                coordinate_2 = random.randint(target[0][1] - 1, target[1][1] + 1)
                 shot_location = [coordinate_1, coordinate_2]
 
             if player.player_board.fire_at(shot_location):
