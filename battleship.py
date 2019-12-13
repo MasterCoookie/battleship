@@ -225,7 +225,7 @@ while not (player.defeat() or bot.defeat()):
                 player_turn = True
 
 
-        elif random.randint(0, 2 - 2 * bot.misses):
+        elif random.randint(0, 22 - 2 * bot.misses):
             shot_location = [random.randint(0, 9), random.randint(0, 9)]
             while not bot.can_fire_at(shot_location):
                 shot_location = [random.randint(0, 9), random.randint(0, 9)]
