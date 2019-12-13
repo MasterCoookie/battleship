@@ -64,7 +64,6 @@ class Grid:
             return True
         return False
 
-
 class Player:
     '''Player class with his board assigned'''
     def __init__(self, board, nickname):
@@ -145,24 +144,6 @@ def vertical(ship_location):
         return True
     return False
 
-# grid = Grid(False)
-# p1 = Player(grid, 'MasterCookie')
-# p1.player_board.add_ship(2, (2, 7), (2, 8))
-# p1.player_board.add_ship(6, (3, 0), (3, 5))
-# p1.add_ship_location(((3, 0), (3, 5)))
-# print(p1.player_board.board)
-# print(p1.get_ship_state((3, 4)))
-# print(p1.player_board.add_ship(3, (6, 3), (8, 3)))
-# p1.add_ship_location(((9, 0), (9, 1)))
-# print(p1.player_board.board)
-# print(p1.player_board.fire_at((9, 0)))
-# p1.shots_fired.append((9, 0))
-# print(p1.can_fire_at((9, 0)))
-# print(p1.player_board.fire_at((9, 1)))
-# print(p1.shots_fired)
-# print(p1.defeat)
-# print(convert_input(input()))
-
 print('Hello! Welcome to JK.Battleship 0.1!\nPlease input your player name')
 grid_p = Grid(False)
 player = Player(grid_p, input())
@@ -178,12 +159,6 @@ for idx in range(2):
                                                                           coordinate_2):
             player.add_ship_location((coordinate_1, coordinate_2))
             break
-
-# dummy data player board
-# player.player_board.add_ship(2, (2, 7), (2, 8))
-# player.player_board.add_ship(6, (3, 2), (8, 2))
-# player.add_ship_location(((2, 7), (2, 8)))
-# player.add_ship_location(((3, 2), (8, 2)))
 
 print("All set! Lets play!")
 
@@ -205,7 +180,6 @@ for idx in range(5):
             if bot.player_board.add_ship(idx + 2, coordinate_1, coordinate_2):
                 bot.add_ship_location((coordinate_1, coordinate_2))
                 break
-
 
 print(bot.player_board.board)
 print("You go first! Good luck!")
@@ -298,7 +272,6 @@ while not (player.defeat() or bot.defeat()):
                 dgmd_ship = False
             else:
                 dgmd_ship = shot_location
-
 
 if bot.defeat:
     print("Congratulations! You win! GG")
